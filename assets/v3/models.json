@@ -1,0 +1,98 @@
+[
+ {
+  "id": "f49",
+  "file": "world1.json#f49.gltf.json",
+  "cell": 39,
+  "size": 7.5,
+  "yaw": 2.6,
+  "sink": 0.5
+ },
+ {
+  "id": "dragon",
+  "file": "world1.json#dragon_rig.gltf.json",
+  "cell": 65,
+  "size": 8,
+  "yaw": 0,
+  "sink": 0.8,
+  "rig": "serpent",
+  "deform": ""
+ },
+ {
+  "id": "cilla",
+  "file": "world1.json#cilla.gltf.json",
+  "cell": 58,
+  "size": 3.0,
+  "yaw": 0,
+  "sink": 0
+ },
+ {
+  "id": "guard",
+  "file": "world1.json#guard.gltf.json",
+  "cell": 78,
+  "size": 1.85,
+  "yaw": 0,
+  "sink": 0,
+  "dx": -2.6,
+  "dz": -2.8
+ },
+ {
+  "id": "varlox",
+  "file": "world2a.json#varlox.gltf.json"
+ },
+ {
+  "id": "mutant",
+  "file": "world2a.json#mutant.gltf.json"
+ },
+ {
+  "id": "auri",
+  "file": "world2a.json#auri.gltf.json"
+ },
+ {
+  "id": "oktar",
+  "file": "world2a.json#oktar.gltf.json"
+ },
+ {
+  "id": "monster",
+  "file": "world2b.json#monster.gltf.json"
+ },
+ {
+  "id": "hands",
+  "file": "world2b.json#hand.gltf.json"
+ },
+ {
+  "id": "jeep",
+  "file": "world2b.json#jeep.gltf.json"
+ },
+ {
+  "id": "voyou",
+  "file": "world3a.json#voyou.gltf.json"
+ },
+ {
+  "id": "garde",
+  "file": "world3a.json#garde.gltf.json"
+ },
+ {
+  "id": "porkus",
+  "file": "world3a.json#porkus.gltf.json"
+ },
+ {
+  "id": "vieil",
+  "file": "world3a.json#vieil.gltf.json"
+ },
+ {
+  "id": "secte",
+  "file": "world3a.json#secte.gltf.json"
+ },
+ {
+  "id": "necarex",
+  "file": "world3b.json#necarex.gltf.json"
+ },
+ {
+  "id": "statue",
+  "file": "world3b.json#statue.gltf.json"
+ },
+ {
+  "id": "voiture",
+  "file": "world3b.json#voiture.gltf.json"
+ }
+]
