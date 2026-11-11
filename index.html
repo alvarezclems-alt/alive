@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALIVE (Lankhor, 1991)</title>
+<meta name="description" content="Portage Web natif d'ALIVE, jeu d'aventure Amstrad CPC de Julian Alvarez et Arnaud Laplace (Lankhor, 1991).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/alive.css">
+</head>
+<body data-mode="none">
+<header class="top">
+  <h1>ALIVE</h1>
+  <p>Julian Alvarez &amp; Arnaud Laplace · Lankhor · Amstrad CPC 1991 — <span class="tag">portage Web</span></p>
+  <div class="version-switch" role="group" aria-label="Version du jeu">
+    <button type="button" data-version="v1" aria-pressed="true">1991 · CPC</button>
+    <button type="button" data-version="v2" aria-pressed="false">V2 · Amiga</button>
+    <button type="button" data-version="v3" aria-pressed="false">V3 · 3D</button>
+  </div>
+  <button type="button" id="btn-intro" class="intro-btn">▶ Introduction</button>
+</header>
+
+<main class="layout">
+  <section class="stage-col">
+    <div id="stage" class="stage">
+      <canvas id="screen" width="640" height="400" aria-label="Écran du jeu ALIVE"></canvas>
+    </div>
+    <div class="under">
+      <p id="hint" class="hint" aria-live="polite"></p>
+      <button type="button" id="btn-reset" class="reset" title="Recommencer une nouvelle partie">↺ Recommencer</button>
+      <div id="contextual" class="contextual"></div>
+    </div>
+    <div class="pad-row">
+      <div class="dpad" role="group" aria-label="Directions">
+        <button type="button" class="n" data-dir="0" aria-label="Nord (flèche haut)">▲</button>
+        <button type="button" class="w" data-dir="1" aria-label="Ouest (flèche gauche)">◀</button>
+        <button type="button" class="eye" data-icon="EYE" aria-label="Œil : voir, lire, physique, fichier (V)">👁</button>
+        <button type="button" class="e" data-dir="3" aria-label="Est (flèche droite)">▶</button>
+        <button type="button" class="s" data-dir="2" aria-label="Sud (flèche bas)">▼</button>
+      </div>
+      <div class="icons" role="group" aria-label="Icônes d'action">
+        <button type="button" data-icon="C" title="C : combattre, menacer"><b>C</b><span>Combat</span></button>
+        <button type="button" data-icon="P" title="P : prendre, déposer, inventaire, repos, boire, manger"><b>P</b><span>Prendre</span></button>
+        <button type="button" data-icon="U" title="U : tenir, offrir, utiliser, soigner"><b>U</b><span>Utiliser</span></button>
+        <button type="button" data-icon="D" title="D : dialoguer"><b>D</b><span>Dialogue</span></button>
+      </div>
+    </div>
+    <pre id="log" class="sr-only" aria-live="polite"></pre>
+  </section>
+
+  <aside class="side">
+    <section id="status" class="card empty">
+      <h2>James Butterfly</h2>
+      <p class="empty-note">Aucune partie en cours.</p>
+      <div class="bars">
+        <label>Force</label><div class="bar" role="meter" aria-label="Force" aria-valuemin="0" aria-valuemax="10"><i id="b-force"></i></div>
+        <label>Vigilance</label><div class="bar" role="meter" aria-label="Vigilance" aria-valuemin="0" aria-valuemax="50"><i id="b-vigil"></i></div>
+        <label>Faim</label><div class="bar" role="meter" aria-label="Faim" aria-valuemin="0" aria-valuemax="50"><i id="b-faim"></i></div>
+        <label>Soif</label><div class="bar" role="meter" aria-label="Soif" aria-valuemin="0" aria-valuemax="40"><i id="b-soif"></i></div>
+      </div>
+      <h3>Inventaire</h3>
+      <ul id="inv" class="inv"></ul>
+      <h3>Carte explorée</h3>
+      <canvas id="automap" width="144" height="176" aria-label="Carte des cases visitées"></canvas>
+      <p id="where" class="small"></p>
+    </section>
+    <details class="card">
+      <summary>Options</summary>
+      <label class="opt">Déplacement
+        <select id="opt-move">
+          <option value="cpc">Comme en 1991 : la flèche tourne, puis avance</option>
+          <option value="direct">Direct : tourner et avancer d'un coup</option>
+        </select></label>
+      <label class="opt">Survie
+        <select id="opt-survival">
+          <option value="original">Originale (1 point de faim, soif, vigilance par action)</option>
+          <option value="clemente">Clémente (moitié moins) — non d'origine</option>
+        </select></label>
+      <label class="opt">Contrôles de la V3 (3D)
+        <select id="opt-controls">
+          <option value="moderne">Modernes : déplacement libre (ZQSD / WASD, souris, manette)</option>
+          <option value="classique">Comme en 1991 : case par case</option>
+        </select></label>
+      <label class="opt chk"><input type="checkbox" id="opt-automap"> Carte des cases visitées (aide moderne)</label>
+      <label class="opt chk"><input type="checkbox" id="opt-music"> Musique de l'écran-titre</label>
+      <label class="opt chk"><input type="checkbox" id="opt-voice"> Voix des personnages (V2)</label>
+      <label class="opt chk"><input type="checkbox" id="opt-sfx"> Bruitages (ajout : le jeu de 1991 était presque muet)</label>
+      <button type="button" id="btn-fullscreen">Plein écran</button>
+    </details>
+    <details class="card">
+      <summary>Commandes</summary>
+      <ul class="small help">
+        <li><b>Flèches</b> : se tourner vers une direction ; appuyer à nouveau pour avancer (« En face le Nord. »).</li>
+        <li><b>V3, contrôles modernes</b> : ZQSD / WASD ou flèches pour marcher, glisser la souris ou le doigt pour regarder, Maj pour courir, <b>E</b> parler, <b>F</b> combattre ; manette : stick gauche marcher, stick droit regarder, A parler, B combattre, X prendre, Y œil.</li>
+        <li><b>C</b> combattre / menacer · <b>P</b> prendre, déposer, inventaire, repos, boire, manger · <b>U</b> tenir, offrir, utiliser, soigner · <b>V</b> (œil) voir, lire, physique, fichier · <b>D</b> dialoguer.</li>
+        <li><b>Entrée</b> valide, <b>Échap</b> = Retour, chiffres 1–9 dans les menus.</li>
+        <li>Les icônes de l'écran d'origine sont aussi cliquables.</li>
+        <li>Sauvegarder / charger : icône œil → <i>Fichier</i> (5 emplacements).</li>
+      </ul>
+    </details>
+  </aside>
+</main>
+
+<dialog id="confirm-reset" class="confirm">
+  <p><b>Recommencer une nouvelle partie ?</b></p>
+  <p class="small">La partie en cours sera perdue. Vos sauvegardes (icône œil, Fichier) sont conservées.</p>
+  <div class="confirm-actions"><button type="button" id="reset-yes" class="primary">Recommencer</button><button type="button" id="reset-no">Annuler</button></div>
+</dialog>
+
+<div id="intro" class="intro">
+  <div class="intro-box">
+    <h2>ALIVE</h2>
+    <p class="lead">1994. La NASA lance son dernier prototype, le F49. Mais en prenant les commandes de ce monstre technologique, le pilote James Butterfly ignore encore qu'il prend un aller simple pour l'enfer…</p>
+<div class="version-switch big-switch" role="group" aria-label="Version du jeu">
+      <button type="button" data-version="v1" aria-pressed="true">1991 · Amstrad CPC</button>
+      <button type="button" data-version="v2" aria-pressed="false">V2 · style Amiga</button>
+      <button type="button" data-version="v3" aria-pressed="false">V3 · 3D</button>
+    </div>
+        <button type="button" id="btn-play" class="primary big">Jouer à ALIVE</button>
+    <p class="small">Graphismes, textes, cartes et règles extraits des disquettes originales. Le jeu complet est jouable, du crash du F49 jusqu'à Necarex.</p>
+  </div>
+</div>
+
+<script src="js/data/assets-w1.js"></script>
+<script src="js/data/assets-w2.js"></script>
+<script src="js/data/assets-w3.js"></script>
+<script src="js/data/maps.js"></script>
+<script src="js/data/words.js"></script>
+<script src="js/cpc.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/v2/amiga.js"></script>
+<script src="js/v2/music.js"></script>
+<script src="js/v2/voice.js"></script>
+<script src="js/v2/intro.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/world1.js"></script>
+<script src="js/world2.js"></script>
+<script src="js/world3.js"></script>
+<script src="js/main.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module" src="js/v3/world3d.js"></script>
+<script>if (/[?&]test=1/.test(location.search)) document.write('<script src="tests/autoplay.js?' + Date.now() + '"><\/script>');</script>
+</body>
+</html>
